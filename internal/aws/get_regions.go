@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 )
@@ -17,12 +16,11 @@ type RegionInput struct {
 }
 
 func GetEnabledRegions(ctx context.Context, input RegionInput) ([]string, error) {
-	cfg, err := config.LoadDefaultConfig(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("unable to load SDK config: %v", err)
-	}
+	ec2Client, err := createEC2Client(ctx, "")
 
-	client := ec2.NewFromConfig(cfg)
+	if err != nil {
+		panic(fmt.Errorf("unable to create EC2 client: %v", err))
+	}
 
 	describeRegionsInput := &ec2.DescribeRegionsInput{
 		AllRegions:  &input.AllRegions,
@@ -31,7 +29,7 @@ func GetEnabledRegions(ctx context.Context, input RegionInput) ([]string, error)
 		RegionNames: input.RegionNames,
 	}
 
-	result, err := client.DescribeRegions(ctx, describeRegionsInput)
+	result, err := ec2Client.DescribeRegions(ctx, describeRegionsInput)
 	if err != nil {
 		return nil, fmt.Errorf("unable to describe regions: %v", err)
 	}
