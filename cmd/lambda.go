@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/kaumnen/aclir/internal/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -13,6 +14,7 @@ var lambdaCmd = &cobra.Command{
 	Long:  `This command will list all lambda functions in every region in your AWS account.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("lambda called")
+		utils.GetAllFunctions()
 	},
 }
 
